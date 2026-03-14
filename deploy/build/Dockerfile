@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
 FROM public.ecr.aws/docker/library/node:24-trixie AS webbuilder
 WORKDIR /web
-COPY ./web /web/
-
+COPY ./web/package.json ./web/package-lock.json* /web/
 RUN npm install
+COPY ./web /web/
+ARG VITE_OPENOBSERVE_ENDPOINT
 RUN NODE_OPTIONS="--max-old-space-size=8192" npm run build
 
 FROM public.ecr.aws/zinclabs/rust:trixie-sccache AS builder

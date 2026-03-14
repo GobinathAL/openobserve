@@ -1,0 +1,26 @@
+services:
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: openobserve-backend
+    environment:
+      ZO_ROOT_USER_EMAIL: root@example.com
+      ZO_ROOT_USER_PASSWORD: Complexpass#123
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve-data:/data
+
+  openobserve-ui:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.ui
+      args:
+        VITE_OPENOBSERVE_ENDPOINT: /
+    container_name: openobserve-ui
+    depends_on:
+      - openobserve
+    ports:
+      - "8081:80"
+
+volumes:
+  openobserve-data:

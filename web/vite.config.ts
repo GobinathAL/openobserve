@@ -90,6 +90,33 @@ function monacoEditorTestResolver() {
 // const enterprisePath = path.resolve(process.cwd(), 'src/enterprise');
 // const srcPath = path.resolve(process.cwd(), 'src');
 
+const openObserveProxy = {
+  "^/api": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+  "^/auth": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+  "^/config": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+  "^/healthz": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+  "^/version": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+  "^/rum": {
+    target: "http://openobserve:5080",
+    changeOrigin: true,
+  },
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
@@ -100,11 +127,17 @@ export default defineConfig({
     __BUILD_TIME__: buildTime,
   },
   server: {
+    host: "0.0.0.0",
     port: 8081,
+    proxy: openObserveProxy,
     // headers: {
     //   "Content-Security-Policy":
     //     "default-src 'self'; connect-src 'self' http://localhost:5080;  script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;img-src 'self' data:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; block-all-mixed-content;",
     // },
+  },
+  preview: {
+    port: 4173,
+    proxy: openObserveProxy,
   },
   base: "./",
   plugins: [
@@ -117,13 +150,13 @@ export default defineConfig({
       ),
     }),
     process.env.VITE_COVERAGE === "true" &&
-      istanbul({
-        include: "src/**/*",
-        exclude: ["node_modules", "test/", "src/**/*.spec.{ts,js}"],
-        extension: [".js", ".ts", ".vue"],
-        requireEnv: false,
-        forceBuildInstrument: true,
-      }),
+    istanbul({
+      include: "src/**/*",
+      exclude: ["node_modules", "test/", "src/**/*.spec.{ts,js}"],
+      extension: [".js", ".ts", ".vue"],
+      requireEnv: false,
+      forceBuildInstrument: true,
+    }),
     enterpriseResolverPlugin,
     vueJsx(),
     (monacoEditorPlugin as any).default({

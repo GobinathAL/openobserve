@@ -1,0 +1,33 @@
+services:
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: openobserve-backend
+    environment:
+      ZO_ROOT_USER_EMAIL: root@example.com
+      ZO_ROOT_USER_PASSWORD: Complexpass#123
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve-data:/data
+
+  openobserve-ui-dev:
+    image: public.ecr.aws/docker/library/node:24-trixie
+    container_name: openobserve-ui-dev
+    working_dir: /web
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "500"
+    command: >
+      bash -lc "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi &&
+      ./node_modules/.bin/vite --host 0.0.0.0 --port 8081"
+    volumes:
+      - ./web:/web
+      - openobserve-ui-node-modules:/web/node_modules
+    depends_on:
+      - openobserve
+    ports:
+      - "8082:8081"
+
+volumes:
+  openobserve-data:
+  openobserve-ui-node-modules:
