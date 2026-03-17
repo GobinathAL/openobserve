@@ -348,10 +348,8 @@ export const useSearchBar = () => {
       // Replace field list in query
       const fieldList =
         searchObj.meta.quickMode &&
-          searchObj.data.stream.interestingFieldList.length > 0
-          ? searchObj.data.stream.interestingFieldList
-            .map((field: string) => `"${field}"`)
-            .join(",")
+        searchObj.data.stream.interestingFieldList.length > 0
+          ? searchObj.data.stream.interestingFieldList.join(",")
           : "*";
 
       const finalQuery = query.replace(/\[FIELD_LIST\]/g, fieldList);

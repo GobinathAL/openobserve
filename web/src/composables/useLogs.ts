@@ -564,30 +564,26 @@ const useLogs = () => {
         operator = action == "include" ? "is" : "is not";
         field_value = "null";
       }
-      const quotedField =
-        searchObj.meta.sqlMode === true ? `"${field}"` : field;
       let expression =
         field_value == "null"
-          ? `${quotedField} ${operator} ${field_value}`
-          : `${quotedField} ${operator} '${field_value}'`;
+          ? `${field} ${operator} ${field_value}`
+          : `${field} ${operator} '${field_value}'`;
 
       const isNumericType = (type: string) =>
         ["int64", "float64"].includes(type.toLowerCase());
       const isBooleanType = (type: string) => type.toLowerCase() === "boolean";
 
       if (isNumericType(fieldType)) {
-        expression = `${quotedField} ${operator} ${field_value}`;
+        expression = `${field} ${operator} ${field_value}`;
       } else if (isBooleanType(fieldType)) {
         operator = action == "include" ? "is" : "is not";
-        expression = `${quotedField} ${operator} ${field_value}`;
+        expression = `${field} ${operator} ${field_value}`;
       }
 
       return expression;
     } catch (e: any) {
       console.log("Error while getting filter expression by field type", e);
-      const quotedField =
-        searchObj.meta.sqlMode === true ? `"${field}"` : field;
-      return `${quotedField} ${operator} '${field_value}'`;
+      return `${field} ${operator} '${field_value}'`;
     }
   };
 

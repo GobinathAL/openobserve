@@ -3664,14 +3664,9 @@ export default defineComponent({
     }
 
     function buildStreamQuery(stream, fieldList, isQuickMode) {
-      const selectFields =
-        fieldList.length > 0 && isQuickMode
-          ? fieldList.map((field) => `"${field}"`).join(",")
-          : "*";
-
       return QUERY_TEMPLATE.replace("[STREAM_NAME]", stream).replace(
         "[FIELD_LIST]",
-        selectFields,
+        fieldList.length > 0 && isQuickMode ? fieldList.join(",") : "*",
       );
     }
 

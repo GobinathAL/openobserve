@@ -154,7 +154,7 @@ export const useSearchQuery = () => {
       searchObj.meta.logsVisualizeToggle === "patterns"
       ? patternsState.value.scanSize
       : searchObj.meta.resultGrid.rowsPerPage;
-
+  
     const parsedSQL: any = fnParsedSQL();
 
     searchObj.meta.resultGrid.showPagination = true;
@@ -248,9 +248,7 @@ export const useSearchQuery = () => {
         if (searchObj.data.stream.selectedStream.length == 1) {
           req.query.sql = req.query.sql.replace(
             "[FIELD_LIST]",
-            searchObj.data.stream.interestingFieldList
-              .map((field: string) => `"${field}"`)
-              .join(","),
+            searchObj.data.stream.interestingFieldList.join(","),
           );
         }
       } else {
@@ -345,11 +343,11 @@ export const useSearchQuery = () => {
 
     if (parsedSQL != undefined) {
 
-      if (!checkTimestampAlias(searchObj.data.query)) {
-        const errorMsg = `Alias '${store.state.zoConfig.timestamp_column || "_timestamp"}' is not allowed.`;
-        notificationMsg.value = errorMsg;
-        return null;
-      }
+     if (!checkTimestampAlias(searchObj.data.query)) {
+            const errorMsg = `Alias '${store.state.zoConfig.timestamp_column || "_timestamp"}' is not allowed.`;
+            notificationMsg.value = errorMsg;
+            return null;
+          }
 
       if (Array.isArray(parsedSQL) && parsedSQL.length == 0) {
         notificationMsg.value =
@@ -404,16 +402,15 @@ export const useSearchQuery = () => {
     if (whereClause.trim() != "") {
       whereClause = addSpacesToOperators(whereClause);
       const parsedSQL = whereClause.split(" ");
-      const streamFieldNames = new Set(
-        searchObj.data.stream.selectedStreamFields.map(
-          (field: any) => field.name,
-        ),
-      );
 
-      for (const [index, token] of parsedSQL.entries()) {
-        const normalizedToken = token.replaceAll('"', "");
-        if (streamFieldNames.has(normalizedToken)) {
-          parsedSQL[index] = `"${normalizedToken}"`;
+      let field: any;
+      let node: any;
+      let index: any;
+      for (field of searchObj.data.stream.selectedStreamFields) {
+        for ([node, index] of parsedSQL) {
+          if (node === field.name) {
+            parsedSQL[index] = '"' + node.replaceAll('"', "") + '"';
+          }
         }
       }
 
